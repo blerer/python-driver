@@ -1329,9 +1329,11 @@ class TableMetadata(object):
             options_copy.pop('compaction', None)
 
             actual_options = json.loads(options_copy.pop('compaction_strategy_options', '{}'))
+            compaction_strategy_class = options_copy.get('compaction_strategy_class', None);
+            is_leveled_compaction_strategy = compaction_strategy_class.endswith('LeveledCompactionStrategy');
             for system_table_name, compact_option_name in self.compaction_options.items():
                 value = options_copy.pop(system_table_name, None)
-                if value:
+                if value and not (is_leveled_compaction_strategy and system_table_name in ('min_compaction_threshold', 'max_compaction_threshold')):
                     actual_options.setdefault(compact_option_name, value)
 
             compaction_option_strings = ["'%s': '%s'" % (k, v) for k, v in actual_options.items()]

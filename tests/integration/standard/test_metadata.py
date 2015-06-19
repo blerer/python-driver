@@ -266,6 +266,13 @@ class SchemaMetadataTests(unittest.TestCase):
         tablemeta = self.get_table_metadata()
         self.check_create_statement(tablemeta, create_statement)
 
+    def test_leveled_compaction(self):
+        create_statement = self.make_create_statement(["a", "b"], ["c"], ["d", "e"])
+        create_statement += " WITH compaction ={'class': 'LeveledCompactionStrategy'} "
+        self.session.execute(create_statement)
+        tablemeta = self.get_table_metadata()
+        self.check_create_statement(tablemeta, create_statement)
+
     def test_indexes(self):
         create_statement = self.make_create_statement(["a"], ["b", "c"], ["d", "e", "f"])
         create_statement += " WITH CLUSTERING ORDER BY (b ASC, c ASC)"
